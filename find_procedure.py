@@ -53,13 +53,14 @@ def get_result_list(some_path, files_lst, st):
     tmp_list = []
     for file in files_lst:
         with open(os.path.join(some_path, file)) as f:
-            file_data_list = [word.upper() for word in f.read().split()]
-            if st in file_data_list:
-                # print('Выбран файл {0}'.format(file))
-                tmp_list.append(file)
+            file_data_list = [word.upper() for word in f.read().split()]  # Список строк файла, которые могут иметь вложенные списки.
+            for file_str in file_data_list:
+                if st in file_str:
+                    tmp_list.append(file)
+                    break
+
     return tmp_list
-    print('Список файлов, содержащих требуемый запрос\n', tmp_list)
-    print('Всего: {0} файлов.'.format(len(tmp_list)))
+
 
 
 def sorted_list(lst, st):
@@ -100,7 +101,6 @@ if __name__ == '__main__':
         migrations_path = get_path(migrations)  # Получим путь до файлов sql
         print('migrations_path:', migrations_path)
         all_files_in_dir = get_all_files_in_dir(migrations_path)  # Получим список всех файлов в передаваемой директории
-        # print('all_files_in_dir: ', all_files_in_dir)  # Отладочный принт
         sorted_files_list = sorted_list(all_files_in_dir, '.sql')  # Получим список содержащий только файлы .sql
         if result_list == []:
             result_list = get_result_list(migrations_path, sorted_files_list,
@@ -108,5 +108,6 @@ if __name__ == '__main__':
         else:
             result_list = get_result_list(migrations_path, result_list,
                                        search_str)
-        my_print(result_list)  # Передали на вывод список result_list
+        my_print(result_list)  # Вывели результат в требуемом формате
+
 
