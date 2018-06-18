@@ -45,7 +45,9 @@ result_list = []
 
 
 def my_print(lst):
-    print('Отсортированный список файлов:\n', lst)
+    print('Отсортированный список файлов:')
+    for file in lst:
+        print(file)
     print('Всего: {0} файлов.'.format(len(lst)))
 
 
@@ -53,7 +55,7 @@ def get_result_list(some_path, files_lst, st):
     tmp_list = []
     for file in files_lst:
         with open(os.path.join(some_path, file)) as f:
-            file_data_list = [word.upper() for word in f.read().split()]  # Список строк файла, которые могут иметь вложенные списки.
+            file_data_list = [word.upper() for word in f.read().split(', ')]  # Список строк файла, которые могут иметь вложенные списки.
             for file_str in file_data_list:
                 if st in file_str:
                     tmp_list.append(file)
@@ -63,23 +65,13 @@ def get_result_list(some_path, files_lst, st):
 
 
 
-def sorted_list(lst, st):
+def filtered_list(lst, st):
     """Функция получает список строк и подстроку,
     возвращает новый список, состоящий из элементов
     списка lst,  которые содержат в конце подтроку st.
     """
 
     return [file for file in lst if file[-len(st):] == st]
-
-
-
-def get_all_files_in_dir(some_path):
-    """Функция возвращает список всех файлов,
-    которые имеются по переданной директории
-    some_path.
-    """
-
-    return os.listdir(some_path)
 
 
 def get_path(folder_name):
@@ -95,15 +87,15 @@ if __name__ == '__main__':
     while True:
         search_str = input('Введите строку поиска: ').upper()
         print(search_str)
-        if search_str == 'quit' or search_str == 'QUIT':
+        if search_str == 'QUIT':
             print('Программа завершена.')
             break
         migrations_path = get_path(migrations)  # Получим путь до файлов sql
         print('migrations_path:', migrations_path)
-        all_files_in_dir = get_all_files_in_dir(migrations_path)  # Получим список всех файлов в передаваемой директории
-        sorted_files_list = sorted_list(all_files_in_dir, '.sql')  # Получим список содержащий только файлы .sql
+        all_files_in_dir = os.listdir(migrations_path) # Получим список всех файлов в передаваемой директории
+        filtered_files_list = filtered_list(all_files_in_dir, '.sql')  # Получим список содержащий только файлы .sql
         if result_list == []:
-            result_list = get_result_list(migrations_path, sorted_files_list,
+            result_list = get_result_list(migrations_path, filtered_files_list,
                                        search_str)  # Получим список имен файлов, которые содержат в себе подстроку search_str
         else:
             result_list = get_result_list(migrations_path, result_list,
